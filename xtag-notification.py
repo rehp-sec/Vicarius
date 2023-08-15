@@ -74,17 +74,16 @@ def get_endpoint_scores():
                 break
             
             for entry in data['serverResponseObject']:
-                if entry['endpointName'].startswith('cl'):
-                    for score in entry['endpointEndpointScores']['endpointScoresExploitabilityRiskFactors']:
-                        unique_key = f"{entry['endpointId']}_{score['riskFactorTerm']}_{score['riskFactorDescription']}"
-                        if score['riskFactorDescription'] in RISK_FACTORS and unique_key not in notified_endpoints:
-                            send_notification_to_teams({
-                                'id': entry['endpointId'],
-                                'name': entry['endpointName'],
-                                'risk_term': score['riskFactorTerm'],
-                                'risk_description': score['riskFactorDescription']
-                            })
-                            notified_endpoints.add(unique_key)
+                for score in entry['endpointEndpointScores']['endpointScoresExploitabilityRiskFactors']:
+                    unique_key = f"{entry['endpointId']}_{score['riskFactorTerm']}_{score['riskFactorDescription']}"
+                    if score['riskFactorDescription'] in RISK_FACTORS and unique_key not in notified_endpoints:
+                        send_notification_to_teams({
+                            'id': entry['endpointId'],
+                            'name': entry['endpointName'],
+                            'risk_term': score['riskFactorTerm'],
+                            'risk_description': score['riskFactorDescription']
+                        })
+                        notified_endpoints.add(unique_key)
 
             from_value += size_value
         
@@ -109,3 +108,4 @@ if __name__ == "__main__":
         finally:
             save_endpoints(notified_endpoints)
             time.sleep(30)
+
